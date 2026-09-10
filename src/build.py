@@ -92,11 +92,16 @@ def panel1():
             "in": step, "z": z, "dir": direction, "rise": kind == "callout",
         }
 
-    ct = A["credit"]
-    pieces = [{
-        "src": uri(os.path.join(ROOT, "assets", "panel1", "credit.png")),
-        "x": ct["x"], "y": ct["y"], "w": ct["w"], "in": 0, "z": 1, "dir": "", "rise": False,
-    }]
+    # The hand-drawn title and the credit line are on the board from the start.
+    def always(name, z):
+        a = A[name]
+        return {
+            "src": uri(os.path.join(ROOT, "assets", "panel1", name + ".png")),
+            "x": a["x"], "y": a["y"], "w": a["w"],
+            "in": 0, "z": z, "dir": "", "rise": False,
+        }
+
+    pieces = [always("credit", 1), always("title", 400)]
     for i, items in enumerate(P1_STEPS, start=1):
         for name, kind, direction in items:
             pieces.append(pc(name, kind, direction, i))
