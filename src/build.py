@@ -105,6 +105,7 @@ def panel1():
         "id": "talking", "name": "Talking <em>with</em> AI",
         "canvas": [W, H], "reveal": len(P1_STEPS),
         "caps": P1_CAPTIONS, "pieces": pieces, "motif": P1_MOTIF,
+        "outro": uri(os.path.join(ROOT, "assets", "closing.jpg")),
     }
 
 
@@ -156,11 +157,13 @@ def panel2():
             "What is the AI actually doing?",
         ],
         "pieces": pieces, "motif": P2_MOTIF,
+        "outro": uri(os.path.join(ROOT, "assets", "closing.jpg")),
     }
 
 
 def main():
-    data = json.dumps({"panels": [panel1(), panel2()], "soon": SOON},
+    # "What is the AI doing?" reads first; "Talking with AI" second.
+    data = json.dumps({"panels": [panel2(), panel1()], "soon": SOON},
                       ensure_ascii=False)
     html = TEMPLATE.replace("__DATA__", data)
     open(os.path.join(ROOT, "index.html"), "w").write(html)
@@ -265,15 +268,24 @@ body{
 .piece.show{opacity:1;transform:none;}
 .piece.show[data-dir]{clip-path:inset(0 0 0 0);}
 
+.outro{
+  position:fixed; inset:0; z-index:905; opacity:0; pointer-events:none;
+  transition:opacity .6s ease;
+  background:linear-gradient(#F3A2C0 0%, #F3A2C0 52%, #BAD79C 74%, #BAD79C 100%);
+}
+.outro.show{opacity:1;pointer-events:auto;cursor:pointer;}
+.outro img{width:100%;height:100%;object-fit:contain;display:block;}
+
 .topbar{
   position:fixed; top:0; left:0; right:0;
   display:flex; align-items:center; justify-content:center;
-  padding:12px 16px; font-size:12px; z-index:20; pointer-events:none;
+  padding:12px 16px; font-size:12px; z-index:930; pointer-events:none;
   opacity:0; transition:opacity .4s ease;
 }
 .topbar.live{opacity:1;}
 .topbar .btn{position:absolute;left:16px;top:10px;}
 .topbar .hint{position:absolute;right:16px;top:15px;}
+.topbar.at-end .hint, .topbar.at-end .eyebrow{display:none;}
 .eyebrow{
   display:flex; align-items:center; gap:8px;
   letter-spacing:.14em; text-transform:uppercase;
@@ -300,6 +312,7 @@ body{
   z-index:10; width:min(92vw,760px); opacity:0; transition:opacity .4s ease;
 }
 .status.live{opacity:1;}
+.status.at-end{opacity:0;pointer-events:none;}
 .caption{
   font-family:'Caveat',cursive; font-size:clamp(18px,2.6vw,25px); font-weight:600;
   color:var(--deep-sky); min-height:1.2em; text-align:center; line-height:1;
@@ -320,6 +333,7 @@ body{
   .board{width:min(calc(100vw - 24px), calc((100vh - 150px) * var(--ar,1.6)));}
   .topbar .eyebrow{font-size:10px;}
   .grid{grid-template-columns:repeat(2, clamp(130px,42vw,180px));}
+  .outro img{object-fit:cover;object-position:18% center;}
 }
 </style>
 
@@ -334,6 +348,8 @@ body{
 <div class="wrap" id="wrap">
   <div class="board" id="board" role="group" aria-label="Panel — click to reveal it step by step"></div>
 </div>
+
+<div class="outro" id="outro"><img id="outroImg" src="" alt="Closing illustration"></div>
 
 <div class="topbar" id="topbar">
   <button class="btn" id="backBtn" type="button">← panels</button>
@@ -355,6 +371,8 @@ body{
   var grid = document.getElementById('grid');
   var wrap = document.getElementById('wrap');
   var board = document.getElementById('board');
+  var outro = document.getElementById('outro');
+  var outroImg = document.getElementById('outroImg');
   var topbar = document.getElementById('topbar');
   var statusBar = document.getElementById('statusBar');
   var captionEl = document.getElementById('caption');
@@ -401,6 +419,7 @@ body{
       board.appendChild(el);
       pieceEls.push(el);
     });
+    outroImg.src = P.outro || '';
   }
 
   function dotsFor(n){
@@ -417,18 +436,23 @@ body{
   }
 
   function render(){
+    var reveal = cur.reveal;
+    var atEnd = !!cur.outro && step > reveal;
+    var s = Math.min(step, reveal);
     pieceEls.forEach(function(el){
       var pin = +el.dataset.in;
       var until = el.dataset.until === '' ? null : +el.dataset.until;
-      var on = step >= pin && (until == null || step <= until);
-      el.classList.toggle('show', on);
+      el.classList.toggle('show', s >= pin && (until == null || s <= until));
     });
     var dots = Array.prototype.slice.call(dotsEl.children);
     dots.forEach(function(d, idx){
       d.classList.toggle('on', (idx + 1) <= step);
       d.classList.toggle('cur', (idx + 1) === step);
     });
-    captionEl.textContent = (step > 0 && cur.caps[step - 1]) ? cur.caps[step - 1] : '';
+    captionEl.textContent = (step > 0 && step <= reveal && cur.caps[step - 1]) ? cur.caps[step - 1] : '';
+    outro.classList.toggle('show', atEnd);
+    topbar.classList.toggle('at-end', atEnd);
+    statusBar.classList.toggle('at-end', atEnd);
   }
   function go(n){ step = Math.max(0, Math.min(total, n)); render(); }
   function next(){ if (step < total) go(step + 1); }
@@ -436,7 +460,7 @@ body{
 
   function openPanel(P){
     cur = P; inPanel = true;
-    total = P.reveal;
+    total = P.reveal + (P.outro ? 1 : 0);
     buildBoard(P);
     dotsFor(total);
     topName.textContent = tag(P.name);
@@ -449,8 +473,9 @@ body{
   function backToHub(){
     inPanel = false;
     wrap.classList.remove('live');
-    topbar.classList.remove('live');
-    statusBar.classList.remove('live');
+    topbar.classList.remove('live', 'at-end');
+    statusBar.classList.remove('live', 'at-end');
+    outro.classList.remove('show');
     hub.classList.remove('hide');
     step = 0;
   }
@@ -458,6 +483,7 @@ body{
   document.getElementById('backBtn').addEventListener('click', function(e){ e.stopPropagation(); backToHub(); });
   board.addEventListener('click', function(){ if (inPanel) next(); });
   wrap.addEventListener('click', function(e){ if (inPanel && e.target === e.currentTarget) next(); });
+  outro.addEventListener('click', function(e){ e.stopPropagation(); backToHub(); });
   document.addEventListener('keydown', function(e){
     if (!inPanel) return;
     if (e.key === ' ' || e.key === 'Spacebar' || e.key === 'ArrowRight'){ e.preventDefault(); next(); }
