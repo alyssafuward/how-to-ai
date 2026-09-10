@@ -106,5 +106,53 @@ def extract_panel1():
     print(f"panel1: {len(manifest)} pieces -> {out}")
 
 
+# --------------------------------------------------------------------------
+# Panel 2 — "What is the AI doing?"
+# A human -> box -> output diagram. The box has two versions of its contents:
+# a giant AI robot (shown while the flow is drawn) and, at the end, a tangle
+# of scribbles with a small robot (what the AI is "really" doing).
+# --------------------------------------------------------------------------
+def extract_panel2():
+    import numpy as np
+
+    psd = PSDImage.open(os.path.join(PSD_DIR, "what-is-the-ai-doing.psd"))
+    W, H = psd.size
+    out = os.path.join(ROOT, "assets", "panel2")
+    os.makedirs(out, exist_ok=True)
+    layers = list(psd)
+    manifest = []
+
+    save_cropped(group_composite(layers[4], (W, H)), out, "credit", manifest)
+    save_cropped(group_composite(layers[18], (W, H)), out, "char_bubble", manifest)
+    save_cropped(group_composite(layers[19], (W, H)), out, "title", manifest)
+    save_cropped(group_composite(layers[14], (W, H)), out, "box", manifest)
+    save_cropped(canvas_composite(layers[13], (W, H)), out, "giant_ai", manifest)
+    save_cropped(group_composite(layers[8], (W, H)), out, "squiggle", manifest)
+    save_cropped(group_composite(layers[12], (W, H)), out, "output", manifest)
+
+    # layer 15 holds both arrow curves in one sub-layer; split at the middle
+    # of the box (nothing crosses there) and fold in the two arrowheads.
+    arrows = list(layers[15])
+    both = canvas_composite(arrows[0], (W, H))
+    head_in = canvas_composite(arrows[1], (W, H))
+    head_out = canvas_composite(arrows[2], (W, H))
+
+    def clip_x(img, lo, hi):
+        a = np.array(img)
+        a[:, :lo, 3] = 0
+        a[:, hi:, 3] = 0
+        return Image.fromarray(a)
+
+    save_cropped(Image.alpha_composite(clip_x(both.copy(), 0, 1150), head_in),
+                 out, "arrow_in", manifest)
+    save_cropped(Image.alpha_composite(clip_x(both.copy(), 1150, W), head_out),
+                 out, "arrow_out", manifest)
+
+    json.dump({"canvas": [W, H], "assets": manifest},
+              open(os.path.join(out, "manifest.json"), "w"), indent=1)
+    print(f"panel2: {len(manifest)} pieces -> {out}")
+
+
 if __name__ == "__main__":
     extract_panel1()
+    extract_panel2()
