@@ -1,0 +1,8 @@
+# Source illustrations live here locally but are not committed (they are
+# large and the rendered art is already in assets/ and index.html).
+src/psd/
+
+# scratch
+*.pyc
+__pycache__/
+.DS_Store

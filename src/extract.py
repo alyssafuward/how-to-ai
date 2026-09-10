@@ -6,6 +6,9 @@ callout, each character on its own layer), so this just walks the layer tree
 and composites the pieces we want onto the full 2400x1500 canvas, then crops
 each to its content bbox and records the offset in a manifest.
 
+The PSDs are not in the repo (large, and the rendered art is already checked
+in). Drop them in src/psd/ locally before running this.
+
     python3 src/extract.py
 
 Requires: psd-tools, Pillow.

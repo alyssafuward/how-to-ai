@@ -8,7 +8,7 @@ sliced into pieces and revealed one click at a time.
 
 - `index.html` — the built, self-contained page (all art embedded as data URIs)
 - `assets/panelN/` — the extracted PNG pieces + a `manifest.json` of canvas offsets
-- `src/psd/` — the source illustrations
+- `src/psd/` — the source illustrations (local only, git-ignored; ask Alyssa for them)
 - `src/extract.py` — PSD → PNG pieces
 - `src/build.py` — pieces → `index.html`
 - `history/` — a local git-backed viewer for browsing past commits (see below)
