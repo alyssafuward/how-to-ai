@@ -44,8 +44,8 @@ P1_STEPS = [
     [("bot_s01", "seg", "t2b"), ("callout_lowkey", "callout", "")],
     [("bot_s02", "seg", "l2r"), ("callout_camping", "callout", "")],
     [("bot_s03", "seg", "l2r"), ("callout_cabin", "callout", "")],
-    [("bot_s04", "seg", "l2r"), ("callout_driving", "callout", "")],
-    [("bot_s05", "seg", "b2t"), ("callout_newnotexp", "callout", "")],
+    [("bot_s04", "seg", "t2b"), ("callout_youhatebugs", "callout", "")],
+    [("bot_s05", "seg", "b2t"), ("callout_bugspray", "callout", "")],
     [("bot_s06", "seg", "b2t"), ("callout_letmesee", "callout", "")],
 ]
 P1_CAPTIONS = [
@@ -61,9 +61,9 @@ P1_CAPTIONS = [
     "“What is your aunt like?”",
     "“No, something more low-key.”",
     "“How about camping?”",
-    "“Renting a cabin sounds good.”",
-    "“Driving distance?”",
-    "“No, somewhere new, but not expensive.”",
+    "“Renting a cabin sounds good. But how could it go wrong?”",
+    "“You hate bugs.”",
+    "“No, it’ll be okay. I’ll bring bug spray. What else?”",
     "“Let me see…”",
 ]
 P1_MOTIF = (

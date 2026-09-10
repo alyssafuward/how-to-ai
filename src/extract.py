@@ -95,8 +95,8 @@ def extract_panel1():
     callouts = {
         13: "twokids", 14: "disneyland", 15: "lowkey", 16: "tellmemore",
         17: "september", 18: "october", 19: "hotels", 20: "auntgift",
-        21: "auntlike", 22: "camping", 23: "cabin", 24: "driving",
-        25: "newnotexp", 26: "letmesee",
+        21: "auntlike", 22: "camping", 23: "cabin", 24: "youhatebugs",
+        25: "bugspray", 26: "letmesee",
     }
     for li, nm in callouts.items():
         save_cropped(canvas_composite(layers[li], (W, H)), out, f"callout_{nm}", manifest)
