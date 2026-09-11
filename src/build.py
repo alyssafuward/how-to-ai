@@ -682,7 +682,10 @@ body{
     statusBar.classList.toggle('at-end', atEnd);
   }
   function go(n){ step = Math.max(0, Math.min(total, n)); render(); }
-  function next(){ if (step < total) go(step + 1); }
+  function next(){
+    if (step < total) { go(step + 1); return; }
+    if (cur.outro) backToHub();   // already on the terminal outro — advancing means "done"
+  }
   function prev(){ if (step > 0) go(step - 1); }
 
   function openPanel(P){
