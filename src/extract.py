@@ -131,6 +131,11 @@ def extract_panel2():
     save_cropped(group_composite(layers[14], (W, H)), out, "box", manifest)
     save_cropped(canvas_composite(layers[13], (W, H)), out, "giant_ai", manifest)
     save_cropped(group_composite(layers[8], (W, H)), out, "squiggle", manifest)
+    # the little robot sitting in the scribble tangle, isolated — it stays on
+    # screen (unlike the scribbles) once the flow diagram replaces the tangle
+    robot = list(layers[8])[3].composite(viewport=(0, 0, W, H), force=True)
+    save_cropped(robot.convert("RGBA") if robot else Image.new("RGBA", (W, H), (0, 0, 0, 0)),
+                 out, "box_robot", manifest)
     save_cropped(group_composite(layers[12], (W, H)), out, "output", manifest)
 
     # layer 15 holds both arrow curves in one sub-layer; split at the middle
@@ -156,6 +161,41 @@ def extract_panel2():
     print(f"panel2: {len(manifest)} pieces -> {out}")
 
 
+# --------------------------------------------------------------------------
+# Panel 2 continued — the "flow diagram" reveal
+# One click after the scribble tangle, it resolves into the actual steps
+# (reads -> interprets -> tools/access/guardrails feed into -> takes action
+# -> back out), plus a fresh exit arrow (the old one pointed at the tangle's
+# exit point, not "Takes Action"'s) and the "one step at a time" tagline.
+# Every layer here is already a single, complete, individually-meaningful
+# piece — no per-segment puzzle to solve this time.
+# --------------------------------------------------------------------------
+def extract_panel2_flow():
+    psd = PSDImage.open(os.path.join(PSD_DIR, "what-is-the-ai-doing-flow.psd"))
+    W, H = psd.size
+    out = os.path.join(ROOT, "assets", "panel2")
+    os.makedirs(out, exist_ok=True)
+    layers = list(psd)
+    manifest = []
+
+    pieces = {
+        1: "tagline", 2: "guardrails", 3: "access", 4: "tools",
+        5: "arrow_takesaction_out", 6: "takes_action", 7: "interprets",
+        8: "reads",
+    }
+    for li, nm in pieces.items():
+        save_cropped(canvas_composite(layers[li], (W, H)), out, nm, manifest)
+
+    # merge into the existing panel2 manifest rather than overwrite it
+    man_path = os.path.join(out, "manifest.json")
+    existing = json.load(open(man_path))
+    names = {a["name"] for a in manifest}
+    existing["assets"] = [a for a in existing["assets"] if a["name"] not in names] + manifest
+    json.dump(existing, open(man_path, "w"), indent=1)
+    print(f"panel2 (flow): {len(manifest)} pieces -> {out}")
+
+
 if __name__ == "__main__":
     extract_panel1()
     extract_panel2()
+    extract_panel2_flow()

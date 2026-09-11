@@ -145,21 +145,31 @@ def panel2():
         pc("credit", 0, 1),
         pc("box", 2, 10),
         pc("arrow_in", 2, 20, "l2r"),
-        pc("arrow_out", 3, 20, "l2r"),
-        pc("giant_ai", 2, 30, until=3),   # removed on the last click
-        pc("squiggle", 4, 35),
+        pc("arrow_out", 3, 20, "l2r", until=4),   # replaced by arrow_takesaction_out
+        pc("giant_ai", 2, 30, until=3),           # removed once the tangle appears
+        pc("squiggle", 4, 35, until=4),           # the tangle itself — removed once the flow diagram appears
+        pc("box_robot", 4, 34),                   # the robot in the tangle — stays through the flow-diagram reveal
+        pc("reads", 5, 36),
+        pc("interprets", 5, 37),
+        pc("tools", 5, 38),
+        pc("access", 5, 39),
+        pc("guardrails", 5, 40),
+        pc("takes_action", 5, 41),
+        pc("arrow_takesaction_out", 5, 42),
+        pc("tagline", 5, 43),
         pc("output", 3, 50),
         pc("char_bubble", 1, 60),
         pc("title", 4, 70),
     ]
     return {
         "id": "aidoing", "name": "What is the AI <em>doing?</em>",
-        "canvas": [W, H], "reveal": 4,
+        "canvas": [W, H], "reveal": 5,
         "caps": [
             "Human tells the AI what to do",
             "The instruction goes in",
             "The AI returns output or actions",
             "What is the AI actually doing?",
+            "Take it one step at a time.",
         ],
         "pieces": pieces, "motif": P2_MOTIF,
         "outro": uri(os.path.join(ROOT, "assets", "closing.jpg")),
