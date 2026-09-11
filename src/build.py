@@ -144,31 +144,43 @@ def panel2():
     pieces = [
         pc("credit", 0, 1),
         pc("box", 2, 10),
-        pc("arrow_in", 2, 20, "l2r"),
-        pc("arrow_out", 3, 20, "l2r", until=4),   # replaced by arrow_takesaction_out
+        pc("arrow_in", 2, 20, "l2r", until=4),    # "reads" (step 5) has its own connecting arrow all the way in
+        pc("arrow_out", 3, 20, "l2r", until=7),   # replaced by arrow_takesaction_out once it appears (step 8)
         pc("giant_ai", 2, 30, until=3),           # removed once the tangle appears
-        pc("squiggle", 4, 35, until=4),           # the tangle itself — removed once the flow diagram appears
+        pc("squiggle", 4, 35, until=4),           # the tangle itself — removed once the flow diagram starts
         pc("box_robot", 4, 34),                   # the robot in the tangle — stays through the flow-diagram reveal
+        pc("magic", 4, 45, until=4),               # "It's like magic..." — only while the tangle's still a mystery
+        # the flow diagram, one click per layer, in the order Alyssa laid the
+        # layers out (top of her layers panel first): reads -> interprets ->
+        # takes action -> the result goes back out -> then the three things
+        # that feed "takes action" -> the tagline.
         pc("reads", 5, 36),
-        pc("interprets", 5, 37),
-        pc("tools", 5, 38),
-        pc("access", 5, 39),
-        pc("guardrails", 5, 40),
-        pc("takes_action", 5, 41),
-        pc("arrow_takesaction_out", 5, 42),
-        pc("tagline", 5, 43),
+        pc("interprets", 6, 37),
+        pc("takes_action", 7, 38),
+        pc("arrow_takesaction_out", 8, 39),
+        pc("tools", 9, 40),
+        pc("access", 10, 41),
+        pc("guardrails", 11, 42),
+        pc("tagline", 12, 43),
         pc("output", 3, 50),
         pc("char_bubble", 1, 60),
         pc("title", 4, 70),
     ]
     return {
         "id": "aidoing", "name": "What is the AI <em>doing?</em>",
-        "canvas": [W, H], "reveal": 5,
+        "canvas": [W, H], "reveal": 12,
         "caps": [
             "Human tells the AI what to do",
             "The instruction goes in",
             "The AI returns output or actions",
-            "What is the AI actually doing?",
+            "It's like magic...",
+            "It reads the instructions.",
+            "It interprets what they mean.",
+            "Then it takes action.",
+            "...and sends the result back out.",
+            "Using whatever tools it has.",
+            "Whatever access it's been given.",
+            "Within whatever guardrails are in place.",
             "Take it one step at a time.",
         ],
         "pieces": pieces, "motif": P2_MOTIF,

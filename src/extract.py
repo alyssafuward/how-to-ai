@@ -195,7 +195,31 @@ def extract_panel2_flow():
     print(f"panel2 (flow): {len(manifest)} pieces -> {out}")
 
 
+# --------------------------------------------------------------------------
+# Panel 2 continued — "It's like magic..."
+# A one-off caption Alyssa added under the scribble-tangle box (the same
+# spot the flow-diagram's tagline occupies one click later).
+# --------------------------------------------------------------------------
+def extract_panel2_magic():
+    psd = PSDImage.open(os.path.join(PSD_DIR, "what-is-the-ai-doing-magic.psd"))
+    W, H = psd.size
+    out = os.path.join(ROOT, "assets", "panel2")
+    os.makedirs(out, exist_ok=True)
+    layers = list(psd)
+    manifest = []
+
+    save_cropped(canvas_composite(layers[20], (W, H)), out, "magic", manifest)
+
+    man_path = os.path.join(out, "manifest.json")
+    existing = json.load(open(man_path))
+    names = {a["name"] for a in manifest}
+    existing["assets"] = [a for a in existing["assets"] if a["name"] not in names] + manifest
+    json.dump(existing, open(man_path, "w"), indent=1)
+    print(f"panel2 (magic): {len(manifest)} pieces -> {out}")
+
+
 if __name__ == "__main__":
     extract_panel1()
     extract_panel2()
     extract_panel2_flow()
+    extract_panel2_magic()
