@@ -345,12 +345,12 @@ def panel4():
         pc("agent_pastry_chef", 5, 23),
         pc("agent_sous_chef", 6, 24),
         pc("agent_server", 7, 25),
-        pc("server_exit_arrow", 7, 26),
-        pc("tagline", 8, 30),
+        pc("server_exit_arrow", 8, 26),
+        pc("tagline", 9, 30),
     ]
     return {
         "id": "multiagent", "name": "What is the AI doing, <em>together?</em>",
-        "canvas": [W, H], "reveal": 8,
+        "canvas": [W, H], "reveal": 9,
         "caps": [
             "It's not always just one AI.",
             "The Head Chef plans — the planner agent.",
@@ -359,6 +359,7 @@ def panel4():
             "So does the Pastry Chef — another worker agent.",
             "The Sous Chef checks the work — the evaluator agent.",
             "The Server reports back — the reporter agent.",
+            "...and sends the result back out.",
             "Take it one step at a time.",
         ],
         "pieces": pieces, "motif": P4_MOTIF,
