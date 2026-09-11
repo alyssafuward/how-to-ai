@@ -204,42 +204,67 @@ def panel3():
     W, H = m["canvas"]
     A = {a["name"]: a for a in m["assets"]}
 
-    def pc(name, step, z):
+    def pc(name, step, z, until=None, full=False):
         a = A[name]
-        return {
+        d = {
             "src": uri(os.path.join(ROOT, "assets", "panel3", name + ".png")),
             "x": a["x"], "y": a["y"], "w": a["w"],
             "in": step, "z": z, "dir": "", "rise": False,
         }
+        if until is not None:
+            d["until"] = until
+        if full:
+            d["full"] = True
+        return d
 
-    # Deterministic branch (top box) fully, then probabilistic (bottom box)
+    CLOSING = uri(os.path.join(ROOT, "assets", "closing.jpg"))
+
+    # Part 1 (steps 1-15): deterministic branch fully, then probabilistic
     # fully — same shape as panel 1's two conversation branches. Every piece
     # here is a complete PSD group; nothing needed splitting or merging.
-    # Each branch's label lands last, after its mechanics have played out —
-    # see how it works before being told what it's called.
+    # Each branch's label lands last, after its mechanics have played out.
+    # All of it clears at step 16, when the closing image shows mid-panel —
+    # part 2 supplies its own full redraw of this same scene (base_reset)
+    # rather than building back up piece by piece.
     pieces = [
         pc("credit", 0, 1),
-        pc("char_bubble", 1, 90),
-        pc("det_frame", 2, 10),
-        pc("det_output_frame", 2, 12),
-        pc("det_reads", 3, 20),
-        pc("det_opens", 4, 21),
-        pc("det_inputs", 5, 22),
-        pc("det_calc_returns", 6, 23),
-        pc("det_ai_reads", 7, 24),
-        pc("det_returns", 8, 25),
-        pc("label_deterministic", 9, 11),
-        pc("prob_frame", 10, 30),
-        pc("prob_reads", 11, 40),
-        pc("prob_pattern", 12, 41),
-        pc("prob_guess", 13, 42),
-        pc("prob_returns", 14, 43),
-        pc("prob_returns_most", 14, 44),
-        pc("label_probabilistic", 15, 31),
+        pc("char_bubble", 1, 90, until=16),
+        pc("det_frame", 2, 10, until=16),
+        pc("det_output_frame", 2, 12, until=16),
+        pc("det_reads", 3, 20, until=16),
+        pc("det_opens", 4, 21, until=16),
+        pc("det_inputs", 5, 22, until=16),
+        pc("det_calc_returns", 6, 23, until=16),
+        pc("det_ai_reads", 7, 24, until=16),
+        pc("det_returns", 8, 25, until=16),
+        pc("label_deterministic", 9, 11, until=16),
+        pc("prob_frame", 10, 30, until=16),
+        pc("prob_reads", 11, 40, until=16),
+        pc("prob_pattern", 12, 41, until=16),
+        pc("prob_guess", 13, 42, until=16),
+        pc("prob_returns", 14, 43, until=16),
+        pc("prob_returns_most", 14, 44, until=16),
+        pc("label_probabilistic", 15, 31, until=16),
+
+        # step 16: the closing image, mid-panel this time — click advances
+        # normally rather than returning to the hub (that's reserved for the
+        # real outro at the very end).
+        {"src": CLOSING, "x": 0, "y": 0, "w": W, "in": 16, "until": 16,
+         "z": 500, "dir": "", "rise": False, "full": True},
+
+        # Part 2 (steps 17-22): the probabilistic box resets to its skeleton
+        # and rebuilds with guardrails feeding in.
+        pc("base_reset", 17, 10),
+        pc("label_probdeterm", 17, 31),
+        pc("pattern_guess", 18, 40),
+        pc("constrain", 19, 41),
+        pc("ai_checks", 20, 42),
+        pc("human_checks", 21, 43),
+        pc("confidence_note", 22, 44),
     ]
     return {
         "id": "determprob", "name": "Deterministic <em>vs</em> Probabilistic",
-        "canvas": [W, H], "reveal": 15,
+        "canvas": [W, H], "reveal": 22,
         "caps": [
             "“Calculate 2 + 5.”",
             "A calculator would do this.",
@@ -256,8 +281,16 @@ def panel3():
             "...and gets 7 as its best guess.",
             "Returns 7 — most of the time.",
             "That's probabilistic.",
+            "",
+            "But you can combine both.",
+            "Pattern-matches 2 + 5, gets 7 as its best guess.",
+            "Constrain its answers...",
+            "...have it check its own answer...",
+            "...or have a human check it.",
+            "Returns 7 — with higher confidence.",
         ],
         "pieces": pieces, "motif": P3_MOTIF,
+        "outro": CLOSING,
     }
 
 
@@ -368,6 +401,17 @@ body{
 .piece[data-dir="b2t"]{clip-path:inset(100% 0 0 0);}
 .piece.show{opacity:1;transform:none;}
 .piece.show[data-dir]{clip-path:inset(0 0 0 0);}
+
+/* a piece that breaks out of the board to fill the screen, mid-sequence
+   (not the panel's terminal outro — just styled the same way) */
+.piece.full{
+  position:fixed; inset:0; z-index:940;
+  background:linear-gradient(#F3A2C0 0%, #F3A2C0 52%, #BAD79C 74%, #BAD79C 100%);
+}
+.piece.full img{width:100%;height:100%;object-fit:contain;display:block;}
+@media (max-width:560px){
+  .piece.full img{object-fit:cover;object-position:18% center;}
+}
 
 .outro{
   position:fixed; inset:0; z-index:905; opacity:0; pointer-events:none;
@@ -507,11 +551,15 @@ body{
     var W = P.canvas[0], H = P.canvas[1];
     P.pieces.slice().sort(function(a, b){ return a.z - b.z; }).forEach(function(p){
       var el = document.createElement('div');
-      el.className = 'piece' + (p.rise ? ' rise' : '');
-      el.style.left = (p.x / W * 100).toFixed(4) + '%';
-      el.style.top = (p.y / H * 100).toFixed(4) + '%';
-      el.style.width = (p.w / W * 100).toFixed(4) + '%';
-      el.style.zIndex = p.z;
+      el.className = 'piece' + (p.rise ? ' rise' : '') + (p.full ? ' full' : '');
+      if (p.full){
+        el.style.zIndex = p.z;
+      } else {
+        el.style.left = (p.x / W * 100).toFixed(4) + '%';
+        el.style.top = (p.y / H * 100).toFixed(4) + '%';
+        el.style.width = (p.w / W * 100).toFixed(4) + '%';
+        el.style.zIndex = p.z;
+      }
       if (p.dir) el.setAttribute('data-dir', p.dir);
       el.dataset.in = p['in'];
       el.dataset.until = (p.until == null ? '' : p.until);
@@ -538,20 +586,24 @@ body{
 
   function render(){
     var reveal = cur.reveal;
-    var atEnd = !!cur.outro && step > reveal;
     var s = Math.min(step, reveal);
+    var fullShowing = false;
     pieceEls.forEach(function(el){
       var pin = +el.dataset.in;
       var until = el.dataset.until === '' ? null : +el.dataset.until;
-      el.classList.toggle('show', s >= pin && (until == null || s <= until));
+      var on = s >= pin && (until == null || s <= until);
+      el.classList.toggle('show', on);
+      if (on && el.classList.contains('full')) fullShowing = true;
     });
+    var atOutro = !!cur.outro && step > reveal;
+    var atEnd = atOutro || fullShowing;   // hide chrome for either kind of full-bleed moment
     var dots = Array.prototype.slice.call(dotsEl.children);
     dots.forEach(function(d, idx){
       d.classList.toggle('on', (idx + 1) <= step);
       d.classList.toggle('cur', (idx + 1) === step);
     });
     captionEl.textContent = (step > 0 && step <= reveal && cur.caps[step - 1]) ? cur.caps[step - 1] : '';
-    outro.classList.toggle('show', atEnd);
+    outro.classList.toggle('show', atOutro);   // only the terminal outro returns to the hub on click
     topbar.classList.toggle('at-end', atEnd);
     statusBar.classList.toggle('at-end', atEnd);
   }

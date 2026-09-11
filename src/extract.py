@@ -261,9 +261,48 @@ def extract_panel3():
     print(f"panel3: {len(manifest)} pieces -> {out}")
 
 
+# --------------------------------------------------------------------------
+# Panel 3 continued — guardrails and checks
+# After the deterministic-vs-probabilistic comparison plays out and the
+# closing image shows once (mid-panel this time, not a terminal outro), the
+# probabilistic box resets to its skeleton (frame + reads + returns, no
+# middle content, no label — a full redraw supplied as one base layer) and
+# rebuilds with guardrails feeding into it: constrain answers, have the AI
+# check its own answer, have a human check it, then returns with higher
+# confidence.
+# --------------------------------------------------------------------------
+def extract_panel3_guardrails():
+    psd = PSDImage.open(os.path.join(PSD_DIR, "deterministic-vs-probabilistic-guardrails.psd"))
+    W, H = psd.size
+    out = os.path.join(ROOT, "assets", "panel3")
+    os.makedirs(out, exist_ok=True)
+    layers = list(psd)
+    manifest = []
+
+    pieces = {
+        2: "label_probdeterm",
+        3: "confidence_note",
+        4: "constrain",
+        5: "ai_checks",
+        6: "human_checks",
+        7: "pattern_guess",
+        8: "base_reset",
+    }
+    for li, nm in pieces.items():
+        save_cropped(canvas_composite(layers[li], (W, H)), out, nm, manifest)
+
+    man_path = os.path.join(out, "manifest.json")
+    existing = json.load(open(man_path))
+    names = {a["name"] for a in manifest}
+    existing["assets"] = [a for a in existing["assets"] if a["name"] not in names] + manifest
+    json.dump(existing, open(man_path, "w"), indent=1)
+    print(f"panel3 (guardrails): {len(manifest)} pieces -> {out}")
+
+
 if __name__ == "__main__":
     extract_panel1()
     extract_panel2()
     extract_panel2_flow()
     extract_panel2_magic()
     extract_panel3()
+    extract_panel3_guardrails()
