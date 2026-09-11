@@ -299,6 +299,41 @@ def extract_panel3_guardrails():
     print(f"panel3 (guardrails): {len(manifest)} pieces -> {out}")
 
 
+# --------------------------------------------------------------------------
+# Panel 4 — "What is the AI doing?" (multi-agent)
+# A second take on the same question: instead of one AI, a kitchen brigade
+# of agents (planner, orchestrator, two workers, evaluator, reporter). The
+# base layer is the frame/title/human/output with no agents in it yet; each
+# agent is its own complete group, arrow included.
+# --------------------------------------------------------------------------
+def extract_panel4():
+    psd = PSDImage.open(os.path.join(PSD_DIR, "what-is-the-ai-doing-multiagent.psd"))
+    W, H = psd.size
+    out = os.path.join(ROOT, "assets", "panel4")
+    os.makedirs(out, exist_ok=True)
+    layers = list(psd)
+    manifest = []
+
+    pieces = {
+        3: "credit",
+        6: "tagline",
+        7: "server_exit_arrow",
+        8: "agent_server",
+        9: "agent_sous_chef",
+        10: "agent_pastry_chef",
+        11: "agent_grill_cook",
+        12: "agent_expediter",
+        13: "agent_head_chef",
+        14: "base",
+    }
+    for li, nm in pieces.items():
+        save_cropped(canvas_composite(layers[li], (W, H)), out, nm, manifest)
+
+    json.dump({"canvas": [W, H], "assets": manifest},
+              open(os.path.join(out, "manifest.json"), "w"), indent=1)
+    print(f"panel4: {len(manifest)} pieces -> {out}")
+
+
 if __name__ == "__main__":
     extract_panel1()
     extract_panel2()
@@ -306,3 +341,4 @@ if __name__ == "__main__":
     extract_panel2_magic()
     extract_panel3()
     extract_panel3_guardrails()
+    extract_panel4()

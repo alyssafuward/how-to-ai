@@ -295,11 +295,73 @@ def panel3():
     }
 
 
+P4_MOTIF = (
+    '<circle cx="60" cy="18" r="9" fill="var(--violet)"/>'
+    '<circle cx="30" cy="42" r="7" fill="var(--violet)" opacity=".8"/>'
+    '<circle cx="90" cy="42" r="7" fill="var(--violet)" opacity=".8"/>'
+    '<circle cx="15" cy="62" r="6" fill="var(--orange)" opacity=".7"/>'
+    '<circle cx="60" cy="62" r="6" fill="var(--orange)" opacity=".7"/>'
+    '<circle cx="105" cy="62" r="6" fill="var(--orange)" opacity=".7"/>'
+    '<path d="M60 27v6M35 46l18 9M85 46l-18 9M22 56l-4 3M60 68v-1M98 56l4 3" '
+    'fill="none" stroke="var(--rule)" stroke-width="2.5" stroke-linecap="round"/>'
+)
+
+
+def panel4():
+    m = manifest("panel4")
+    W, H = m["canvas"]
+    A = {a["name"]: a for a in m["assets"]}
+
+    def pc(name, step, z):
+        a = A[name]
+        return {
+            "src": uri(os.path.join(ROOT, "assets", "panel4", name + ".png")),
+            "x": a["x"], "y": a["y"], "w": a["w"],
+            "in": step, "z": z, "dir": "", "rise": False,
+        }
+
+    # The base (frame, title, human, output) has no agents in it yet; each
+    # agent is its own complete group, arrow included, so one click each.
+    # Head chef -> expediter -> the two workers -> the evaluator -> the
+    # reporter -> back out, then the tagline reappears (it closed the
+    # single-agent panel too) right before the closing image.
+    pieces = [
+        pc("credit", 0, 1),
+        pc("base", 1, 10),
+        pc("agent_head_chef", 2, 20),
+        pc("agent_expediter", 3, 21),
+        pc("agent_grill_cook", 4, 22),
+        pc("agent_pastry_chef", 5, 23),
+        pc("agent_sous_chef", 6, 24),
+        pc("agent_server", 7, 25),
+        pc("server_exit_arrow", 7, 26),
+        pc("tagline", 8, 30),
+    ]
+    return {
+        "id": "multiagent", "name": "What is the AI doing, <em>together?</em>",
+        "canvas": [W, H], "reveal": 8,
+        "caps": [
+            "It's not always just one AI.",
+            "The Head Chef plans — the planner agent.",
+            "The Expediter orchestrates — the orchestrator agent.",
+            "The Grill Cook does the work — a worker agent.",
+            "So does the Pastry Chef — another worker agent.",
+            "The Sous Chef checks the work — the evaluator agent.",
+            "The Server reports back — the reporter agent.",
+            "Take it one step at a time.",
+        ],
+        "pieces": pieces, "motif": P4_MOTIF,
+        "outro": uri(os.path.join(ROOT, "assets", "closing.jpg")),
+    }
+
+
 def main():
-    # "What is the AI doing?" reads first; "Talking with AI" second; then
-    # "Deterministic vs Probabilistic".
-    data = json.dumps({"panels": [panel2(), panel1(), panel3()], "soon": SOON - 1},
-                      ensure_ascii=False)
+    # "What is the AI doing?" first; the multi-agent take on it second;
+    # "Talking with AI" third; "Deterministic vs Probabilistic" fourth.
+    data = json.dumps(
+        {"panels": [panel2(), panel4(), panel1(), panel3()], "soon": SOON - 2},
+        ensure_ascii=False,
+    )
     html = TEMPLATE.replace("__DATA__", data)
     open(os.path.join(ROOT, "index.html"), "w").write(html)
     print(f"index.html  {len(html) / 1024 / 1024:.2f} MB")
