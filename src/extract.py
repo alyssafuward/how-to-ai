@@ -218,8 +218,52 @@ def extract_panel2_magic():
     print(f"panel2 (magic): {len(manifest)} pieces -> {out}")
 
 
+# --------------------------------------------------------------------------
+# Panel 3 — "Deterministic vs Probabilistic"
+# Same "calculate 2+5" instruction, sent to a calculator-style deterministic
+# process and an LLM-style probabilistic one. Every top-level layer here is
+# either a complete, individually-meaningful group or a small standalone
+# label/character layer — nothing needs splitting or merging by hand.
+# --------------------------------------------------------------------------
+def extract_panel3():
+    psd = PSDImage.open(os.path.join(PSD_DIR, "deterministic-vs-probabilistic.psd"))
+    W, H = psd.size
+    out = os.path.join(ROOT, "assets", "panel3")
+    os.makedirs(out, exist_ok=True)
+    layers = list(psd)
+    manifest = []
+
+    pieces = {
+        1: "label_probabilistic",
+        2: "prob_returns_most",
+        3: "prob_returns",
+        4: "prob_guess",
+        5: "prob_pattern",
+        6: "prob_reads",
+        7: "prob_frame",
+        8: "label_deterministic",
+        9: "det_returns",
+        10: "det_ai_reads",
+        11: "det_calc_returns",
+        12: "det_inputs",
+        13: "det_opens",
+        14: "det_reads",
+        15: "det_output_frame",
+        16: "det_frame",
+        17: "char_bubble",
+        18: "credit",
+    }
+    for li, nm in pieces.items():
+        save_cropped(canvas_composite(layers[li], (W, H)), out, nm, manifest)
+
+    json.dump({"canvas": [W, H], "assets": manifest},
+              open(os.path.join(out, "manifest.json"), "w"), indent=1)
+    print(f"panel3: {len(manifest)} pieces -> {out}")
+
+
 if __name__ == "__main__":
     extract_panel1()
     extract_panel2()
     extract_panel2_flow()
     extract_panel2_magic()
+    extract_panel3()

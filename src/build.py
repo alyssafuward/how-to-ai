@@ -188,9 +188,83 @@ def panel2():
     }
 
 
+P3_MOTIF = (
+    '<circle cx="10" cy="35" r="6" fill="var(--orange)"/>'
+    '<path d="M16 35 C30 35 30 18 46 18" fill="none" stroke="var(--violet)" stroke-width="4" stroke-linecap="round"/>'
+    '<rect x="50" y="8" width="32" height="20" rx="3" fill="none" stroke="var(--violet)" stroke-width="3.5"/>'
+    '<text x="66" y="23" font-size="14" text-anchor="middle" fill="var(--violet)" font-family="monospace">7</text>'
+    '<path d="M16 35 C30 35 30 52 46 52" fill="none" stroke="var(--orange)" stroke-width="4" stroke-linecap="round"/>'
+    '<rect x="50" y="42" width="32" height="20" rx="3" fill="none" stroke="var(--orange)" stroke-width="3.5"/>'
+    '<text x="66" y="57" font-size="13" text-anchor="middle" fill="var(--orange)" font-family="monospace">7~</text>'
+)
+
+
+def panel3():
+    m = manifest("panel3")
+    W, H = m["canvas"]
+    A = {a["name"]: a for a in m["assets"]}
+
+    def pc(name, step, z):
+        a = A[name]
+        return {
+            "src": uri(os.path.join(ROOT, "assets", "panel3", name + ".png")),
+            "x": a["x"], "y": a["y"], "w": a["w"],
+            "in": step, "z": z, "dir": "", "rise": False,
+        }
+
+    # Deterministic branch (top box) fully, then probabilistic (bottom box)
+    # fully — same shape as panel 1's two conversation branches. Every piece
+    # here is a complete PSD group; nothing needed splitting or merging.
+    # Each branch's label lands last, after its mechanics have played out —
+    # see how it works before being told what it's called.
+    pieces = [
+        pc("credit", 0, 1),
+        pc("char_bubble", 1, 90),
+        pc("det_frame", 2, 10),
+        pc("det_output_frame", 2, 12),
+        pc("det_reads", 3, 20),
+        pc("det_opens", 4, 21),
+        pc("det_inputs", 5, 22),
+        pc("det_calc_returns", 6, 23),
+        pc("det_ai_reads", 7, 24),
+        pc("det_returns", 8, 25),
+        pc("label_deterministic", 9, 11),
+        pc("prob_frame", 10, 30),
+        pc("prob_reads", 11, 40),
+        pc("prob_pattern", 12, 41),
+        pc("prob_guess", 13, 42),
+        pc("prob_returns", 14, 43),
+        pc("prob_returns_most", 14, 44),
+        pc("label_probabilistic", 15, 31),
+    ]
+    return {
+        "id": "determprob", "name": "Deterministic <em>vs</em> Probabilistic",
+        "canvas": [W, H], "reveal": 15,
+        "caps": [
+            "“Calculate 2 + 5.”",
+            "A calculator would do this.",
+            "It reads the instructions.",
+            "“Opens” the calculator.",
+            "“Inputs” 2 + 5.",
+            "The calculator returns 7.",
+            "The AI “reads” 7.",
+            "Returns 7.",
+            "That's deterministic.",
+            "An AI does this differently.",
+            "It reads the instructions.",
+            "Pattern-matches 2 + 5...",
+            "...and gets 7 as its best guess.",
+            "Returns 7 — most of the time.",
+            "That's probabilistic.",
+        ],
+        "pieces": pieces, "motif": P3_MOTIF,
+    }
+
+
 def main():
-    # "What is the AI doing?" reads first; "Talking with AI" second.
-    data = json.dumps({"panels": [panel2(), panel1()], "soon": SOON},
+    # "What is the AI doing?" reads first; "Talking with AI" second; then
+    # "Deterministic vs Probabilistic".
+    data = json.dumps({"panels": [panel2(), panel1(), panel3()], "soon": SOON - 1},
                       ensure_ascii=False)
     html = TEMPLATE.replace("__DATA__", data)
     open(os.path.join(ROOT, "index.html"), "w").write(html)
