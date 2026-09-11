@@ -255,16 +255,16 @@ def panel3():
         # Part 2 (steps 17-22): the probabilistic box resets to its skeleton
         # and rebuilds with guardrails feeding in.
         pc("base_reset", 17, 10),
-        pc("label_probdeterm", 17, 31),
         pc("pattern_guess", 18, 40),
         pc("constrain", 19, 41),
         pc("ai_checks", 20, 42),
         pc("human_checks", 21, 43),
         pc("confidence_note", 22, 44),
+        pc("label_probdeterm", 23, 31),   # named last, after seeing how it works
     ]
     return {
         "id": "determprob", "name": "Deterministic <em>vs</em> Probabilistic",
-        "canvas": [W, H], "reveal": 22,
+        "canvas": [W, H], "reveal": 23,
         "caps": [
             "“Calculate 2 + 5.”",
             "A calculator would do this.",
@@ -288,6 +288,7 @@ def panel3():
             "...have it check its own answer...",
             "...or have a human check it.",
             "Returns 7 — with higher confidence.",
+            "And that's Prob + Determ.",
         ],
         "pieces": pieces, "motif": P3_MOTIF,
         "outro": CLOSING,
