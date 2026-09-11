@@ -233,16 +233,25 @@ def panel3():
     pieces = [
         pc("credit", 0, 1),
         pc("char_bubble", 1, 90),
-        pc("prob_frame", 2, 10),
+        # Note: "det_frame"/"det_reads" and "prob_frame"/"prob_reads" are
+        # named for what they meant in the *original* (pre-swap) art — the
+        # frame+robot and "reads instructions" graphics stayed pinned to
+        # their original canvas position when Alyssa redid the layout, only
+        # their surrounding content moved. So the piece that's actually at
+        # the TOP now (Probabilistic's new home) is the one still named
+        # "det_*", and the one at the BOTTOM is still named "prob_*" — this
+        # only affects these two pairs; every other piece's name already
+        # matches its new position.
+        pc("det_frame", 2, 10),
         pc("det_output_frame", 2, 12),
-        pc("prob_reads", 3, 20),
+        pc("det_reads", 3, 20),
         pc("prob_pattern", 4, 41, until=16),
         pc("prob_guess", 5, 42, until=16),
         pc("prob_returns", 6, 43),
         pc("prob_returns_most", 6, 44, until=16),
         pc("label_probabilistic", 7, 31, until=16),
-        pc("det_frame", 8, 30),
-        pc("det_reads", 9, 40),
+        pc("prob_frame", 8, 30),
+        pc("prob_reads", 9, 40),
         pc("det_opens", 10, 21),
         pc("det_inputs", 11, 22),
         pc("det_calc_returns", 12, 23),
