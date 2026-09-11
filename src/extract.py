@@ -286,7 +286,9 @@ def extract_panel3_guardrails():
         5: "ai_checks",
         6: "human_checks",
         7: "pattern_guess",
-        8: "base_reset",
+        # layer 8 is a reference bundle of content already extracted from
+        # the base comparison PSD (Alyssa: "ignore the first grouped layer,
+        # that's already in the app") — nothing new to pull from it.
     }
     for li, nm in pieces.items():
         save_cropped(canvas_composite(layers[li], (W, H)), out, nm, manifest)
