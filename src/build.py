@@ -367,11 +367,63 @@ def panel4():
     }
 
 
+# ------------------------------------------------------------------ panel 5
+P5_MOTIF = (
+    '<rect x="6" y="8" width="28" height="20" rx="3" fill="none" stroke="var(--ink)" stroke-width="4"/>'
+    '<rect x="46" y="38" width="28" height="20" rx="3" fill="none" stroke="var(--ink)" stroke-width="4"/>'
+    '<rect x="86" y="8" width="28" height="20" rx="3" fill="none" stroke="var(--ink)" stroke-width="4"/>'
+    '<path d="M14 28c0 10 10 6 24 10" fill="none" stroke="var(--orange)" stroke-width="3.5" stroke-linecap="round"/>'
+    '<path d="M74 44c8 -8 6 -20 20 -24" fill="none" stroke="var(--violet)" stroke-width="3.5" stroke-linecap="round"/>'
+)
+
+P5_NODES = [
+    ("scan", "", "Scan for new bills."),
+    ("flag", "t2b", "Flag the relevant one."),
+    ("research", "b2t", "Research the bill."),
+    ("assess", "t2b", "Assess the impact."),
+    ("draft", "b2t", "Draft a stance."),
+    ("policy", "t2b", "Send it to policy review."),
+    ("leadership", "b2t", "Get leadership sign-off."),
+]
+
+
+def panel5():
+    m = manifest("panel5")
+    W, H = m["canvas"]
+    A = {a["name"]: a for a in m["assets"]}
+
+    def piece(name, step, z, direction="", rise=False):
+        a = A[name]
+        return {
+            "src": uri(os.path.join(ROOT, "assets", "panel5", name + ".png")),
+            "x": a["x"], "y": a["y"], "w": a["w"],
+            "in": step, "z": z, "dir": direction, "rise": rise,
+        }
+
+    pieces = [
+        piece("credit", 0, 1),
+        piece("mascot", 0, 2),
+        piece("title", 0, 3),
+    ]
+    for step, (name, direction, _) in enumerate(P5_NODES, start=1):
+        if direction:
+            pieces.append(piece(f"arrow_{name}", step, step * 10 - 1, direction))
+        pieces.append(piece(name, step, step * 10, rise=True))
+
+    return {
+        "id": "legislative", "name": "Legislative Policy <em>Tracking</em>",
+        "canvas": [W, H], "reveal": len(P5_NODES),
+        "caps": [c for _, _, c in P5_NODES],
+        "pieces": pieces, "motif": P5_MOTIF,
+    }
+
+
 def main():
-    # "What is the AI doing?" first; the multi-agent take on it second;
-    # "Talking with AI" third; "Deterministic vs Probabilistic" fourth.
+    # "Legislative Policy Tracking" first; "What is the AI doing?" second;
+    # the multi-agent take on it third; "Talking with AI" fourth;
+    # "Deterministic vs Probabilistic" fifth.
     data = json.dumps(
-        {"panels": [panel2(), panel4(), panel1(), panel3()], "soon": SOON - 2},
+        {"panels": [panel5(), panel2(), panel4(), panel1(), panel3()], "soon": SOON - 3},
         ensure_ascii=False,
     )
     html = TEMPLATE.replace("__DATA__", data)

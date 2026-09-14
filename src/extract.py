@@ -336,6 +336,52 @@ def extract_panel4():
     print(f"panel4: {len(manifest)} pieces -> {out}")
 
 
+# --------------------------------------------------------------------------
+# Panel 5 — "Legislative Policy Tracking + Response"
+# A 7-step zigzag flow (scan -> flag -> research -> assess -> draft ->
+# review -> sign-off). Each step is its own group: a box+label, plus (for
+# every step but the first) a connecting arrow in as its last child. Several
+# steps carry hidden earlier drafts of the label text as extra sibling
+# layers/groups inside the same group -- skip anything not currently
+# visible rather than trusting layer names, which are all generic.
+# --------------------------------------------------------------------------
+def extract_panel5():
+    psd = PSDImage.open(os.path.join(PSD_DIR, "legislative-policy.psd"))
+    W, H = psd.size
+    out = os.path.join(ROOT, "assets", "panel5")
+    os.makedirs(out, exist_ok=True)
+    layers = list(psd)
+    manifest = []
+
+    save_cropped(canvas_composite(layers[3], (W, H)), out, "credit", manifest)
+    save_cropped(canvas_composite(layers[10], (W, H)), out, "mascot", manifest)
+    save_cropped(canvas_composite(layers[11], (W, H)), out, "title", manifest)
+
+    def node_composite(children):
+        base = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        for c in children:
+            if not c.visible:
+                continue
+            im = c.composite(viewport=(0, 0, W, H), force=True)
+            if im is not None:
+                base.alpha_composite(im.convert("RGBA"))
+        return base
+
+    names = ["scan", "flag", "research", "assess", "draft", "policy", "leadership"]
+    nodes = list(layers[9])
+    for idx, (grp, nm) in enumerate(zip(nodes, names)):
+        kids = list(grp)
+        has_arrow = idx > 0
+        box_kids = kids[:-1] if has_arrow else kids
+        save_cropped(node_composite(box_kids), out, nm, manifest)
+        if has_arrow:
+            save_cropped(canvas_composite(kids[-1], (W, H)), out, f"arrow_{nm}", manifest)
+
+    json.dump({"canvas": [W, H], "assets": manifest},
+              open(os.path.join(out, "manifest.json"), "w"), indent=1)
+    print(f"panel5: {len(manifest)} pieces -> {out}")
+
+
 if __name__ == "__main__":
     extract_panel1()
     extract_panel2()
@@ -344,3 +390,4 @@ if __name__ == "__main__":
     extract_panel3()
     extract_panel3_guardrails()
     extract_panel4()
+    extract_panel5()
