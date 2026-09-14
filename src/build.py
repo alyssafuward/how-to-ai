@@ -405,16 +405,19 @@ def panel5():
         piece("mascot", 0, 2),
         piece("title", 0, 3),
     ]
-    for step, (name, direction, _) in enumerate(P5_NODES, start=1):
+    # step 1 is a blank beat: just the title and the mascot on the board,
+    # before the flow starts at step 2.
+    for step, (name, direction, _) in enumerate(P5_NODES, start=2):
         if direction:
             pieces.append(piece(f"arrow_{name}", step, step * 10 - 1, direction))
         pieces.append(piece(name, step, step * 10, rise=True))
 
     return {
         "id": "legislative", "name": "Legislative Policy <em>Tracking</em>",
-        "canvas": [W, H], "reveal": len(P5_NODES),
-        "caps": [c for _, _, c in P5_NODES],
+        "canvas": [W, H], "reveal": len(P5_NODES) + 1,
+        "caps": [""] + [c for _, _, c in P5_NODES],
         "pieces": pieces, "motif": P5_MOTIF,
+        "outro": uri(os.path.join(ROOT, "assets", "closing.jpg")),
     }
 
 
