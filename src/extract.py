@@ -384,19 +384,18 @@ def extract_panel5():
 
 # --------------------------------------------------------------------------
 # Panel 6 — "Legislative Policy Response" (the closer, mirrors panel 5's
-# opener). A redraw of the same scan -> flag -> research -> assess -> draft
-# flow, but only those first 5 steps are finished art here (policy review and
-# leadership sign-off exist as hidden draft groups — skip them for now).
-# Boxes are their own complete groups (arrow baked in) except "assess",
-# whose incoming arrow is a separate sibling layer sitting between the
-# research and assess groups. Layer 12 frames the whole flow the same way
-# panel 2 frames its box: mascot + "human tells AI what to do" on the
-# left, robot + "AI returns output or actions" on the right, with an
-# empty frame in between where the scan/flag/research/assess/draft boxes
-# sit — it's on the board from the start, behind the flow. The last item
-# in the boxes group is the closing arrow from Draft Stance's corner,
-# dipping down and curving up into that "returns" bubble. The plain white
-# "Background" layer is a no-op over the board's own white paper.
+# opener). The same scan -> flag -> research -> assess -> draft flow, now
+# followed by policy review and leadership sign-off, redrawn as full
+# groups (arrow baked in, same as the other five boxes — "assess" grew
+# its own incoming arrow in this pass, so it no longer needs the separate
+# sibling arrow the first version required). The frame (mascot + "human
+# tells AI what to do" on the left, "AI returns output or actions" on the
+# right) sits behind the flow from the start; the standalone output robot
+# it used to include is gone, replaced by a smaller robot that arrives
+# with the closing arrow, plus a second mascot appearance timed to policy
+# review. The plain white "Background" layer is a no-op over the board's
+# own white paper; layer 9 is the superseded first draft of the whole
+# flow, hidden wholesale rather than deleted.
 # --------------------------------------------------------------------------
 def extract_panel6():
     psd = PSDImage.open(os.path.join(PSD_DIR, "push-back-against-ai.psd"))
@@ -407,8 +406,10 @@ def extract_panel6():
     manifest = []
 
     save_cropped(canvas_composite(layers[3], (W, H)), out, "credit", manifest)
-    save_cropped(canvas_composite(layers[13], (W, H)), out, "title", manifest)
-    save_cropped(canvas_composite(layers[12], (W, H)), out, "frame", manifest)
+    save_cropped(canvas_composite(layers[17], (W, H)), out, "title", manifest)
+    save_cropped(canvas_composite(layers[14], (W, H)), out, "frame", manifest)
+    save_cropped(canvas_composite(layers[16], (W, H)), out, "robot_output", manifest)
+    save_cropped(canvas_composite(layers[13], (W, H)), out, "orange_policy", manifest)
 
     def group_composite(group):
         img = group.composite(viewport=(0, 0, W, H))
@@ -416,14 +417,16 @@ def extract_panel6():
             return Image.new("RGBA", (W, H), (0, 0, 0, 0))
         return img.convert("RGBA")
 
-    boxes = list(layers[10])
+    boxes = list(layers[12])
     save_cropped(group_composite(boxes[0]), out, "scan", manifest)
     save_cropped(group_composite(boxes[1]), out, "flag", manifest)
     save_cropped(group_composite(boxes[2]), out, "research", manifest)
-    save_cropped(canvas_composite(boxes[4], (W, H)), out, "arrow_assess", manifest)
     save_cropped(group_composite(boxes[3]), out, "assess", manifest)
-    save_cropped(group_composite(boxes[5]), out, "draft", manifest)
-    save_cropped(canvas_composite(boxes[8], (W, H)), out, "arrow_output", manifest)
+    save_cropped(group_composite(boxes[4]), out, "draft", manifest)
+    save_cropped(canvas_composite(boxes[6], (W, H)), out, "arrow_output", manifest)
+
+    save_cropped(group_composite(layers[11]), out, "policy", manifest)
+    save_cropped(group_composite(layers[10]), out, "leadership", manifest)
 
     json.dump({"canvas": [W, H], "assets": manifest},
               open(os.path.join(out, "manifest.json"), "w"), indent=1)

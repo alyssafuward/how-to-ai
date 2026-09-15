@@ -435,6 +435,8 @@ P6_NODES = [
     ("research", "Research the bill."),
     ("assess", "Assess the impact."),
     ("draft", "Draft a stance."),
+    ("policy", "Send it to policy review."),
+    ("leadership", "Get leadership sign-off."),
 ]
 
 
@@ -460,16 +462,24 @@ def panel6():
         piece("scan", 2, 10),
         piece("flag", 3, 20),
         piece("research", 4, 30),
-        piece("arrow_assess", 5, 39),
         piece("assess", 5, 40),
         piece("draft", 6, 50),
+        # the closing arrow into "AI returns output" arrives with the
+        # output robot that used to sit static in the frame
         piece("arrow_output", 7, 60, rise=False),
+        piece("robot_output", 7, 61, rise=False),
+        # policy review brings back the orange mascot for a second beat
+        piece("policy", 8, 70),
+        piece("orange_policy", 8, 71),
+        piece("leadership", 9, 80),
     ]
 
     return {
         "id": "response", "name": "Legislative Policy <em>Response</em>",
         "canvas": [W, H], "reveal": len(P6_NODES) + 2,
-        "caps": [""] + [c for _, c in P6_NODES] + ["...and sends it back out as output."],
+        "caps": [""] + [c for _, c in P6_NODES[:5]]
+                + ["...and sends it back out as output."]
+                + [c for _, c in P6_NODES[5:]],
         "pieces": pieces, "motif": P6_MOTIF,
         "outro": uri(os.path.join(ROOT, "assets", "closing.jpg")),
     }
