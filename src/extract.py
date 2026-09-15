@@ -393,8 +393,10 @@ def extract_panel5():
 # panel 2 frames its box: mascot + "human tells AI what to do" on the
 # left, robot + "AI returns output or actions" on the right, with an
 # empty frame in between where the scan/flag/research/assess/draft boxes
-# sit — it's on the board from the start, behind the flow. The plain
-# white "Background" layer is a no-op over the board's own white paper.
+# sit — it's on the board from the start, behind the flow. The last item
+# in the boxes group is the closing arrow from Draft Stance's corner,
+# dipping down and curving up into that "returns" bubble. The plain white
+# "Background" layer is a no-op over the board's own white paper.
 # --------------------------------------------------------------------------
 def extract_panel6():
     psd = PSDImage.open(os.path.join(PSD_DIR, "push-back-against-ai.psd"))
@@ -421,6 +423,7 @@ def extract_panel6():
     save_cropped(canvas_composite(boxes[4], (W, H)), out, "arrow_assess", manifest)
     save_cropped(group_composite(boxes[3]), out, "assess", manifest)
     save_cropped(group_composite(boxes[5]), out, "draft", manifest)
+    save_cropped(canvas_composite(boxes[8], (W, H)), out, "arrow_output", manifest)
 
     json.dump({"canvas": [W, H], "assets": manifest},
               open(os.path.join(out, "manifest.json"), "w"), indent=1)

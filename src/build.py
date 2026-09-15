@@ -455,18 +455,21 @@ def panel6():
         piece("credit", 0, 1, rise=False),
         piece("frame", 0, 2, rise=False),
         piece("title", 0, 3, rise=False),
-        piece("scan", 1, 10),
-        piece("flag", 2, 20),
-        piece("research", 3, 30),
-        piece("arrow_assess", 4, 39),
-        piece("assess", 4, 40),
-        piece("draft", 5, 50),
+        # step 1 is a blank beat: title + frame on the board, matching the
+        # opener panel, before the flow starts at step 2.
+        piece("scan", 2, 10),
+        piece("flag", 3, 20),
+        piece("research", 4, 30),
+        piece("arrow_assess", 5, 39),
+        piece("assess", 5, 40),
+        piece("draft", 6, 50),
+        piece("arrow_output", 7, 60, rise=False),
     ]
 
     return {
         "id": "response", "name": "Legislative Policy <em>Response</em>",
-        "canvas": [W, H], "reveal": len(P6_NODES),
-        "caps": [c for _, c in P6_NODES],
+        "canvas": [W, H], "reveal": len(P6_NODES) + 2,
+        "caps": [""] + [c for _, c in P6_NODES] + ["...and sends it back out as output."],
         "pieces": pieces, "motif": P6_MOTIF,
         "outro": uri(os.path.join(ROOT, "assets", "closing.jpg")),
     }
