@@ -468,8 +468,8 @@ def panel6():
         # arrow and the output robot, instead of sitting on the board from
         # the start like the rest of the frame.
         piece("arrow_output", 7, 60, rise=False),
-        piece("robot_output", 7, 61, rise=False),
-        piece("returns_bubble", 7, 62, rise=False),
+        piece("returns_bubble", 7, 61, rise=False),
+        piece("robot_output", 7, 62, rise=False),
         # policy review brings back the orange mascot for a second beat —
         # it sits in front of leadership sign-off, which arrives a step
         # later right underneath it
