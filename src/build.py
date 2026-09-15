@@ -421,12 +421,63 @@ def panel5():
     }
 
 
+P6_MOTIF = (
+    '<rect x="10" y="10" width="30" height="20" rx="3" fill="none" stroke="var(--ink)" stroke-width="4"/>'
+    '<rect x="80" y="40" width="30" height="20" rx="3" fill="none" stroke="var(--ink)" stroke-width="4"/>'
+    '<path d="M46 34c10 14 0 20 12 22M8 48c-6 10 4 14 14 12l6 -2" fill="none" stroke="var(--orange)" '
+    'stroke-width="3.5" stroke-linecap="round"/>'
+    '<path d="M64 12l6 -3 1 7" fill="none" stroke="var(--violet)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>'
+)
+
+P6_NODES = [
+    ("scan", "Scan for new bills."),
+    ("flag", "Flag the relevant one."),
+    ("research", "Research the bill."),
+    ("assess", "Assess the impact."),
+    ("draft", "Draft a stance."),
+]
+
+
+def panel6():
+    m = manifest("panel6")
+    W, H = m["canvas"]
+    A = {a["name"]: a for a in m["assets"]}
+
+    def piece(name, step, z, rise=True):
+        a = A[name]
+        return {
+            "src": uri(os.path.join(ROOT, "assets", "panel6", name + ".png")),
+            "x": a["x"], "y": a["y"], "w": a["w"],
+            "in": step, "z": z, "dir": "", "rise": rise,
+        }
+
+    pieces = [
+        piece("credit", 0, 1, rise=False),
+        piece("title", 0, 3, rise=False),
+        piece("scan", 1, 10),
+        piece("flag", 2, 20),
+        piece("research", 3, 30),
+        piece("arrow_assess", 4, 39),
+        piece("assess", 4, 40),
+        piece("draft", 5, 50),
+    ]
+
+    return {
+        "id": "response", "name": "Legislative Policy <em>Response</em>",
+        "canvas": [W, H], "reveal": len(P6_NODES),
+        "caps": [c for _, c in P6_NODES],
+        "pieces": pieces, "motif": P6_MOTIF,
+        "outro": uri(os.path.join(ROOT, "assets", "closing.jpg")),
+    }
+
+
 def main():
-    # "Legislative Policy Tracking" first; "What is the AI doing?" second;
-    # the multi-agent take on it third; "Talking with AI" fourth;
-    # "Deterministic vs Probabilistic" fifth.
+    # "Legislative Policy Tracking" first (the opener); "What is the AI
+    # doing?" second; the multi-agent take on it third; "Talking with AI"
+    # fourth; "Deterministic vs Probabilistic" fifth; "Legislative Policy
+    # Response" last (the closer).
     data = json.dumps(
-        {"panels": [panel5(), panel2(), panel4(), panel1(), panel3()], "soon": SOON - 3},
+        {"panels": [panel5(), panel2(), panel4(), panel1(), panel3(), panel6()], "soon": SOON - 4},
         ensure_ascii=False,
     )
     html = TEMPLATE.replace("__DATA__", data)

@@ -382,6 +382,47 @@ def extract_panel5():
     print(f"panel5: {len(manifest)} pieces -> {out}")
 
 
+# --------------------------------------------------------------------------
+# Panel 6 — "Legislative Policy Response" (the closer, mirrors panel 5's
+# opener). A redraw of the same scan -> flag -> research -> assess -> draft
+# flow, but only those first 5 steps are finished art here (policy review and
+# leadership sign-off exist as hidden draft groups — skip them for now).
+# Boxes are their own complete groups (arrow baked in) except "assess",
+# whose incoming arrow is a separate sibling layer sitting between the
+# research and assess groups. The big vis layer elsewhere in the file is
+# leftover reference art from another panel — ignore it, and the plain
+# white "Background" layer is a no-op over the board's own white paper.
+# --------------------------------------------------------------------------
+def extract_panel6():
+    psd = PSDImage.open(os.path.join(PSD_DIR, "push-back-against-ai.psd"))
+    W, H = psd.size
+    out = os.path.join(ROOT, "assets", "panel6")
+    os.makedirs(out, exist_ok=True)
+    layers = list(psd)
+    manifest = []
+
+    save_cropped(canvas_composite(layers[3], (W, H)), out, "credit", manifest)
+    save_cropped(canvas_composite(layers[13], (W, H)), out, "title", manifest)
+
+    def group_composite(group):
+        img = group.composite(viewport=(0, 0, W, H))
+        if img is None:
+            return Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        return img.convert("RGBA")
+
+    boxes = list(layers[10])
+    save_cropped(group_composite(boxes[0]), out, "scan", manifest)
+    save_cropped(group_composite(boxes[1]), out, "flag", manifest)
+    save_cropped(group_composite(boxes[2]), out, "research", manifest)
+    save_cropped(canvas_composite(boxes[4], (W, H)), out, "arrow_assess", manifest)
+    save_cropped(group_composite(boxes[3]), out, "assess", manifest)
+    save_cropped(group_composite(boxes[5]), out, "draft", manifest)
+
+    json.dump({"canvas": [W, H], "assets": manifest},
+              open(os.path.join(out, "manifest.json"), "w"), indent=1)
+    print(f"panel6: {len(manifest)} pieces -> {out}")
+
+
 if __name__ == "__main__":
     extract_panel1()
     extract_panel2()
@@ -391,3 +432,4 @@ if __name__ == "__main__":
     extract_panel3_guardrails()
     extract_panel4()
     extract_panel5()
+    extract_panel6()
