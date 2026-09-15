@@ -389,8 +389,11 @@ def extract_panel5():
 # leadership sign-off exist as hidden draft groups — skip them for now).
 # Boxes are their own complete groups (arrow baked in) except "assess",
 # whose incoming arrow is a separate sibling layer sitting between the
-# research and assess groups. The big vis layer elsewhere in the file is
-# leftover reference art from another panel — ignore it, and the plain
+# research and assess groups. Layer 12 frames the whole flow the same way
+# panel 2 frames its box: mascot + "human tells AI what to do" on the
+# left, robot + "AI returns output or actions" on the right, with an
+# empty frame in between where the scan/flag/research/assess/draft boxes
+# sit — it's on the board from the start, behind the flow. The plain
 # white "Background" layer is a no-op over the board's own white paper.
 # --------------------------------------------------------------------------
 def extract_panel6():
@@ -403,6 +406,7 @@ def extract_panel6():
 
     save_cropped(canvas_composite(layers[3], (W, H)), out, "credit", manifest)
     save_cropped(canvas_composite(layers[13], (W, H)), out, "title", manifest)
+    save_cropped(canvas_composite(layers[12], (W, H)), out, "frame", manifest)
 
     def group_composite(group):
         img = group.composite(viewport=(0, 0, W, H))

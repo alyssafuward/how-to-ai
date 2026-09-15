@@ -453,6 +453,7 @@ def panel6():
 
     pieces = [
         piece("credit", 0, 1, rise=False),
+        piece("frame", 0, 2, rise=False),
         piece("title", 0, 3, rise=False),
         piece("scan", 1, 10),
         piece("flag", 2, 20),
