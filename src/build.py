@@ -464,14 +464,18 @@ def panel6():
         piece("research", 4, 30),
         piece("assess", 5, 40),
         piece("draft", 6, 50),
-        # the closing arrow into "AI returns output" arrives with the
-        # output robot that used to sit static in the frame
+        # "AI returns output or actions" arrives together with the closing
+        # arrow and the output robot, instead of sitting on the board from
+        # the start like the rest of the frame.
         piece("arrow_output", 7, 60, rise=False),
         piece("robot_output", 7, 61, rise=False),
-        # policy review brings back the orange mascot for a second beat
+        piece("returns_bubble", 7, 62, rise=False),
+        # policy review brings back the orange mascot for a second beat —
+        # it sits in front of leadership sign-off, which arrives a step
+        # later right underneath it
         piece("policy", 8, 70),
-        piece("orange_policy", 8, 71),
-        piece("leadership", 9, 80),
+        piece("orange_policy", 8, 75),
+        piece("leadership", 9, 65),
     ]
 
     return {

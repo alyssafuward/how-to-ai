@@ -407,9 +407,25 @@ def extract_panel6():
 
     save_cropped(canvas_composite(layers[3], (W, H)), out, "credit", manifest)
     save_cropped(canvas_composite(layers[17], (W, H)), out, "title", manifest)
-    save_cropped(canvas_composite(layers[14], (W, H)), out, "frame", manifest)
     save_cropped(canvas_composite(layers[16], (W, H)), out, "robot_output", manifest)
     save_cropped(canvas_composite(layers[13], (W, H)), out, "orange_policy", manifest)
+
+    # Layer 14 is a single flattened frame: mascot + "human tells AI what
+    # to do" on the left, the empty box in the middle, "AI returns output
+    # or actions" on the right — but that "returns" bubble should only
+    # arrive with the output arrow/robot, not sit on the board from the
+    # start like the rest of the frame. It's not its own PSD layer, so
+    # split it out of the flattened art by its known canvas region.
+    frame_full = canvas_composite(layers[14], (W, H))
+    bubble_region = (1850, 280, W, 750)
+    bubble_img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    bubble_img.paste(frame_full.crop(bubble_region), bubble_region[:2])
+    frame_img = frame_full.copy()
+    frame_img.paste(Image.new("RGBA", (bubble_region[2] - bubble_region[0],
+                                        bubble_region[3] - bubble_region[1]), (0, 0, 0, 0)),
+                     bubble_region[:2])
+    save_cropped(frame_img, out, "frame", manifest)
+    save_cropped(bubble_img, out, "returns_bubble", manifest)
 
     def group_composite(group):
         img = group.composite(viewport=(0, 0, W, H))
