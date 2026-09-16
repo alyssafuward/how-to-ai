@@ -517,6 +517,8 @@ def panel7():
 
     # The full-size box scene plays first, then swaps for its miniature twin
     # once the satellites (SalesCloud, Clyde) need room to plug in above it.
+    # Last beat: the two satellites also connect straight to each other,
+    # arcing over the robot's head, not just through the shared AI.
     pieces = [
         pc("credit", 0, 1),
         pc("title", 0, 90),
@@ -527,17 +529,19 @@ def panel7():
         pc("arrow_salescloud", 4, 15),
         pc("clyde", 5, 21),
         pc("arrow_clyde", 6, 16),
+        pc("arrow_clouds", 7, 22),
     ]
     return {
         "id": "whoelse", "name": "Just You + Your AI <em>+ Who Else?</em>",
-        "canvas": [W, H], "reveal": 6,
+        "canvas": [W, H], "reveal": 7,
         "caps": [
             "Just you and your AI.",
             "Zoom out a little, though.",
             "So it's not just your AI — SalesCloud feeds into it too.",
             "Its output loops back in.",
             "Clyde's another AI platform doing the same.",
-            "All plugged into the same loop.",
+            "Its output loops back in too.",
+            "And they connect to each other, too.",
         ],
         "pieces": pieces, "motif": P7_MOTIF,
         "outro": uri(os.path.join(ROOT, "assets", "closing.jpg")),

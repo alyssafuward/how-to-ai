@@ -459,6 +459,11 @@ def extract_panel6():
 # from earlier edits (a lone "SalesCloud" title, a stray "It's like magic..."
 # caption reused from panel 2, and some loose numbers) that never made it
 # into the final art — skip them.
+#
+# Revision 2 (arrows redrawn): the in/out arrows on each cloud were redrawn
+# and a new arrow pair connecting the two clouds directly to each other was
+# added, arcing over the robot's head. Everything above the small scene
+# (the big scene, both titles, the credit) is untouched by this revision.
 # --------------------------------------------------------------------------
 def extract_panel7():
     psd = PSDImage.open(os.path.join(PSD_DIR, "panel7.psd"))
@@ -468,15 +473,16 @@ def extract_panel7():
     layers = list(psd)
     manifest = []
 
-    save_cropped(canvas_composite(layers[12], (W, H)), out, "credit", manifest)
-    save_cropped(canvas_composite(layers[11], (W, H)), out, "title", manifest)
-    save_cropped(canvas_composite(layers[9], (W, H)), out, "title_who_else", manifest)
-    save_cropped(group_composite(layers[10], (W, H)), out, "big_scene", manifest)
-    save_cropped(group_composite(layers[8], (W, H)), out, "small_scene", manifest)
-    save_cropped(group_composite(layers[7], (W, H)), out, "salescloud", manifest)
-    save_cropped(canvas_composite(layers[6], (W, H)), out, "arrow_salescloud", manifest)
-    save_cropped(group_composite(layers[5], (W, H)), out, "clyde", manifest)
-    save_cropped(canvas_composite(layers[4], (W, H)), out, "arrow_clyde", manifest)
+    save_cropped(canvas_composite(layers[13], (W, H)), out, "credit", manifest)
+    save_cropped(canvas_composite(layers[12], (W, H)), out, "title", manifest)
+    save_cropped(canvas_composite(layers[10], (W, H)), out, "title_who_else", manifest)
+    save_cropped(group_composite(layers[11], (W, H)), out, "big_scene", manifest)
+    save_cropped(group_composite(layers[9], (W, H)), out, "small_scene", manifest)
+    save_cropped(group_composite(layers[8], (W, H)), out, "salescloud", manifest)
+    save_cropped(canvas_composite(layers[7], (W, H)), out, "arrow_salescloud", manifest)
+    save_cropped(group_composite(layers[6], (W, H)), out, "clyde", manifest)
+    save_cropped(canvas_composite(layers[5], (W, H)), out, "arrow_clyde", manifest)
+    save_cropped(canvas_composite(layers[4], (W, H)), out, "arrow_clouds", manifest)
 
     json.dump({"canvas": [W, H], "assets": manifest},
               open(os.path.join(out, "manifest.json"), "w"), indent=1)
