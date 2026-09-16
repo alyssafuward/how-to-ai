@@ -15,7 +15,6 @@ import json
 import os
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SOON = 4  # placeholder tiles
 
 
 def uri(path):
@@ -489,15 +488,75 @@ def panel6():
     }
 
 
+# ------------------------------------------------------------------ panel 7
+P7_MOTIF = (
+    '<rect x="44" y="18" width="32" height="26" rx="4" fill="none" stroke="var(--ink)" stroke-width="3.5"/>'
+    '<circle cx="60" cy="31" r="6" fill="var(--violet)"/>'
+    '<rect x="6" y="4" width="24" height="18" rx="3" fill="none" stroke="var(--orange)" stroke-width="2.5"/>'
+    '<rect x="90" y="4" width="24" height="18" rx="3" fill="none" stroke="var(--orange)" stroke-width="2.5"/>'
+    '<path d="M32 20c6 4 8 6 12 8" fill="none" stroke="var(--orange)" stroke-width="2.5" stroke-linecap="round"/>'
+    '<path d="M88 20c-6 4 -8 6 -12 8" fill="none" stroke="var(--orange)" stroke-width="2.5" stroke-linecap="round"/>'
+)
+
+
+def panel7():
+    m = manifest("panel7")
+    W, H = m["canvas"]
+    A = {a["name"]: a for a in m["assets"]}
+
+    def pc(name, step, z, until=None):
+        a = A[name]
+        d = {
+            "src": uri(os.path.join(ROOT, "assets", "panel7", name + ".png")),
+            "x": a["x"], "y": a["y"], "w": a["w"],
+            "in": step, "z": z, "dir": "", "rise": False,
+        }
+        if until is not None:
+            d["until"] = until
+        return d
+
+    # The full-size box scene plays first, then swaps for its miniature twin
+    # once the satellites (SalesCloud, Clyde) need room to plug in above it.
+    pieces = [
+        pc("credit", 0, 1),
+        pc("title", 0, 90),
+        pc("big_scene", 1, 10, until=1),
+        pc("small_scene", 2, 10),
+        pc("salescloud", 3, 20),
+        pc("title_who_else", 3, 91),
+        pc("arrow_salescloud", 4, 15),
+        pc("clyde", 5, 21),
+        pc("arrow_clyde", 6, 16),
+    ]
+    return {
+        "id": "whoelse", "name": "Just You + Your AI <em>+ Who Else?</em>",
+        "canvas": [W, H], "reveal": 6,
+        "caps": [
+            "Just you and your AI.",
+            "Zoom out a little, though.",
+            "So it's not just your AI — SalesCloud feeds into it too.",
+            "Its output loops back in.",
+            "Clyde's another AI platform doing the same.",
+            "All plugged into the same loop.",
+        ],
+        "pieces": pieces, "motif": P7_MOTIF,
+        "outro": uri(os.path.join(ROOT, "assets", "closing.jpg")),
+    }
+
+
 def main():
     # "Legislative Policy Tracking" first (the opener); "What is the AI
     # doing?" second; the multi-agent take on it third; "Talking with AI"
     # fourth; "Deterministic vs Probabilistic" fifth; "Legislative Policy
-    # Response" last (the closer).
-    data = json.dumps(
-        {"panels": [panel5(), panel2(), panel4(), panel1(), panel3(), panel6()], "soon": SOON - 4},
-        ensure_ascii=False,
-    )
+    # Response" sixth (the closer); "Just You + Your AI + Who Else?" opens a
+    # third row, flanked by soon tiles so it sits centered rather than
+    # flush left.
+    tiles = [{"kind": "panel", "panel": p} for p in
+             [panel5(), panel2(), panel4(), panel1(), panel3(), panel6()]]
+    tiles.append({"kind": "soon"})
+    tiles.append({"kind": "panel", "panel": panel7()})
+    tiles.append({"kind": "soon"})
+    data = json.dumps({"tiles": tiles}, ensure_ascii=False)
     html = TEMPLATE.replace("__DATA__", data)
     open(os.path.join(ROOT, "index.html"), "w").write(html)
     print(f"index.html  {len(html) / 1024 / 1024:.2f} MB")
@@ -709,7 +768,7 @@ body{
 <script>
 (function(){
   var DATA = __DATA__;
-  var PANELS = DATA.panels;
+  var TILES = DATA.tiles;
 
   var hub = document.getElementById('hub');
   var grid = document.getElementById('grid');
@@ -726,7 +785,14 @@ body{
   var cur = null, step = 0, inPanel = false, pieceEls = [], total = 0;
   function tag(name){ return name.replace(/<[^>]+>/g, ''); }
 
-  PANELS.forEach(function(P){
+  TILES.forEach(function(T){
+    if (T.kind === 'soon'){
+      var s = document.createElement('div');
+      s.className = 'tile tile--soon'; s.innerHTML = '<span>soon</span>';
+      grid.appendChild(s);
+      return;
+    }
+    var P = T.panel;
     var b = document.createElement('button');
     b.className = 'tile tile--panel'; b.type = 'button';
     b.setAttribute('aria-label', 'Open: ' + tag(P.name));
@@ -735,11 +801,6 @@ body{
     b.addEventListener('click', function(){ openPanel(P); });
     grid.appendChild(b);
   });
-  for (var i = 0; i < DATA.soon; i++){
-    var s = document.createElement('div');
-    s.className = 'tile tile--soon'; s.innerHTML = '<span>soon</span>';
-    grid.appendChild(s);
-  }
 
   function buildBoard(P){
     board.innerHTML = '';

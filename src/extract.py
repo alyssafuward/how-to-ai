@@ -449,6 +449,40 @@ def extract_panel6():
     print(f"panel6: {len(manifest)} pieces -> {out}")
 
 
+# --------------------------------------------------------------------------
+# Panel 7 — "Just You + Your AI + Who Else?"
+# The single-AI-box idea, redrawn small once its satellites arrive: two more
+# boxes (SalesCloud, Clyde) plug into the same AI, each with its own
+# connecting arrow. The full-size box/robot/callouts scene and its miniature
+# replacement are each a single flattened group in the PSD (same shape, two
+# scales — no per-piece splitting needed). Layers 1-3 are leftover drafts
+# from earlier edits (a lone "SalesCloud" title, a stray "It's like magic..."
+# caption reused from panel 2, and some loose numbers) that never made it
+# into the final art — skip them.
+# --------------------------------------------------------------------------
+def extract_panel7():
+    psd = PSDImage.open(os.path.join(PSD_DIR, "panel7.psd"))
+    W, H = psd.size
+    out = os.path.join(ROOT, "assets", "panel7")
+    os.makedirs(out, exist_ok=True)
+    layers = list(psd)
+    manifest = []
+
+    save_cropped(canvas_composite(layers[12], (W, H)), out, "credit", manifest)
+    save_cropped(canvas_composite(layers[11], (W, H)), out, "title", manifest)
+    save_cropped(canvas_composite(layers[9], (W, H)), out, "title_who_else", manifest)
+    save_cropped(group_composite(layers[10], (W, H)), out, "big_scene", manifest)
+    save_cropped(group_composite(layers[8], (W, H)), out, "small_scene", manifest)
+    save_cropped(group_composite(layers[7], (W, H)), out, "salescloud", manifest)
+    save_cropped(canvas_composite(layers[6], (W, H)), out, "arrow_salescloud", manifest)
+    save_cropped(group_composite(layers[5], (W, H)), out, "clyde", manifest)
+    save_cropped(canvas_composite(layers[4], (W, H)), out, "arrow_clyde", manifest)
+
+    json.dump({"canvas": [W, H], "assets": manifest},
+              open(os.path.join(out, "manifest.json"), "w"), indent=1)
+    print(f"panel7: {len(manifest)} pieces -> {out}")
+
+
 if __name__ == "__main__":
     extract_panel1()
     extract_panel2()
@@ -459,3 +493,4 @@ if __name__ == "__main__":
     extract_panel4()
     extract_panel5()
     extract_panel6()
+    extract_panel7()
