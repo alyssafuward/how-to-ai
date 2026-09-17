@@ -236,7 +236,6 @@ def extract_panel3():
     pieces = {
         1: "label_probabilistic",
         2: "prob_returns_most",
-        3: "prob_returns",
         4: "prob_guess",
         5: "prob_pattern",
         6: "prob_reads",
@@ -255,6 +254,13 @@ def extract_panel3():
     }
     for li, nm in pieces.items():
         save_cropped(canvas_composite(layers[li], (W, H)), out, nm, manifest)
+
+    # layer 3 ("prob_returns") is a group of two pieces — the "RETURNS 7"
+    # text and its connecting arrow — split so the arrow can be repositioned
+    # on its own to tie into whichever box feeds it (see build.py).
+    returns_text, returns_arrow = list(layers[3])
+    save_cropped(canvas_composite(returns_text, (W, H)), out, "prob_returns_text", manifest)
+    save_cropped(canvas_composite(returns_arrow, (W, H)), out, "prob_returns_arrow", manifest)
 
     json.dump({"canvas": [W, H], "assets": manifest},
               open(os.path.join(out, "manifest.json"), "w"), indent=1)

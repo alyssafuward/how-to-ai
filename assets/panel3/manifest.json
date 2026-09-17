@@ -19,13 +19,6 @@
    "h": 141
   },
   {
-   "name": "prob_returns",
-   "x": 1700,
-   "y": 113,
-   "w": 612,
-   "h": 335
-  },
-  {
    "name": "prob_guess",
    "x": 938,
    "y": 245,
@@ -129,6 +122,20 @@
    "y": 1367,
    "w": 344,
    "h": 81
+  },
+  {
+   "name": "prob_returns_text",
+   "x": 1961,
+   "y": 113,
+   "w": 351,
+   "h": 262
+  },
+  {
+   "name": "prob_returns_arrow",
+   "x": 1700,
+   "y": 254,
+   "w": 319,
+   "h": 194
   },
   {
    "name": "label_probdeterm",

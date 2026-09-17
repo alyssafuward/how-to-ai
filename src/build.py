@@ -206,11 +206,11 @@ def panel3():
     W, H = m["canvas"]
     A = {a["name"]: a for a in m["assets"]}
 
-    def pc(name, step, z, until=None, full=False):
+    def pc(name, step, z, until=None, full=False, dx=0, dy=0):
         a = A[name]
         d = {
             "src": uri(os.path.join(ROOT, "assets", "panel3", name + ".png")),
-            "x": a["x"], "y": a["y"], "w": a["w"],
+            "x": a["x"] + dx, "y": a["y"] + dy, "w": a["w"],
             "in": step, "z": z, "dir": "", "rise": False,
         }
         if until is not None:
@@ -249,7 +249,8 @@ def panel3():
         pc("det_reads", 3, 20),
         pc("prob_pattern", 4, 41, until=16),
         pc("prob_guess", 5, 42, until=16),
-        pc("prob_returns", 6, 43),
+        pc("prob_returns_text", 6, 43, until=16),
+        pc("prob_returns_arrow", 6, 43, until=16),  # ties to prob_guess, the only box open yet
         pc("prob_returns_most", 6, 44, until=16),
         pc("label_probabilistic", 7, 31, until=16),
         pc("prob_frame", 8, 30),
@@ -274,6 +275,11 @@ def panel3():
         pc("ai_checks", 19, 46),
         pc("human_checks", 20, 47),
         pc("confidence_note", 21, 44),
+        # "returns 7" reappears alongside confidence, not before; the arrow
+        # is nudged down so it ties into human_checks (the last box in the
+        # chain) instead of its original spot at ai_checks.
+        pc("prob_returns_text", 21, 43),
+        pc("prob_returns_arrow", 21, 43, dx=30, dy=90),
         pc("label_probdeterm", 22, 31),   # named last, after seeing how it works
     ]
     return {
