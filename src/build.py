@@ -48,6 +48,7 @@ P1_STEPS = [
     [("bot_s06", "seg", "b2t"), ("callout_letmesee", "callout", "")],
 ]
 P1_CAPTIONS = [
+    "",
     "“I’m planning a family trip. Where should we go?”",
     "“The Caribbean is a great option.”",
     "“I have two kids under 10.”",
@@ -101,13 +102,14 @@ def panel1():
         }
 
     pieces = [always("credit", 1), always("title", 400)]
-    for i, items in enumerate(P1_STEPS, start=1):
+    # Step 1 is a blank beat: just the title on the board, no characters yet.
+    for i, items in enumerate(P1_STEPS, start=2):
         for name, kind, direction in items:
             pieces.append(pc(name, kind, direction, i))
 
     return {
         "id": "talking", "name": "Talking <em>with</em> AI",
-        "canvas": [W, H], "reveal": len(P1_STEPS),
+        "canvas": [W, H], "reveal": len(P1_STEPS) + 1,
         "caps": P1_CAPTIONS, "pieces": pieces, "motif": P1_MOTIF,
         "outro": uri(os.path.join(ROOT, "assets", "closing.jpg")),
     }
