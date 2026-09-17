@@ -143,23 +143,24 @@ def panel2():
     pieces = [
         pc("credit", 0, 1),
         pc("box", 2, 10),
-        pc("arrow_in", 2, 20, "l2r", until=4),    # "reads" (step 5) has its own connecting arrow all the way in
-        pc("arrow_out", 3, 20, "l2r", until=7),   # replaced by arrow_takesaction_out once it appears (step 8)
+        pc("arrow_in", 2, 20, "l2r", until=4),     # "reads" (step 5) has its own connecting arrow all the way in
+        pc("arrow_out", 3, 20, "l2r", until=4),    # gone once the flow diagram starts; arrow_takesaction_out is its
+                                                    # step-11 replacement, once the whole flow's drawn
         pc("giant_ai", 2, 30, until=3),           # removed once the tangle appears
         pc("squiggle", 4, 35, until=4),           # the tangle itself — removed once the flow diagram starts
         pc("box_robot", 4, 34),                   # the robot in the tangle — stays through the flow-diagram reveal
         pc("magic", 4, 45, until=4),               # "It's like magic..." — only while the tangle's still a mystery
-        # the flow diagram, one click per layer, in the order Alyssa laid the
-        # layers out (top of her layers panel first): reads -> interprets ->
-        # takes action -> the result goes back out -> then the three things
-        # that feed "takes action" -> the tagline.
+        # the flow diagram, one click per layer: reads -> interprets ->
+        # takes action -> the three things that feed "takes action" ->
+        # the result goes back out (last, once the whole flow is drawn) ->
+        # the tagline.
         pc("reads", 5, 36),
         pc("interprets", 6, 37),
         pc("takes_action", 7, 38),
-        pc("arrow_takesaction_out", 8, 39),
-        pc("tools", 9, 40),
-        pc("access", 10, 41),
-        pc("guardrails", 11, 42),
+        pc("tools", 8, 40),
+        pc("access", 9, 41),
+        pc("guardrails", 10, 42),
+        pc("arrow_takesaction_out", 11, 39),
         pc("tagline", 12, 43),
         pc("output", 3, 50),
         pc("char_bubble", 1, 60),
@@ -176,10 +177,10 @@ def panel2():
             "It reads the instructions.",
             "It interprets what they mean.",
             "Then it takes action.",
-            "...and sends the result back out.",
             "Using whatever tools it has.",
             "Whatever access it's been given.",
             "Within whatever guardrails are in place.",
+            "...and sends the result back out.",
             "Take it one step at a time.",
         ],
         "pieces": pieces, "motif": P2_MOTIF,
